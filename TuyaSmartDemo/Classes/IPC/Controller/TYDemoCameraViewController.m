@@ -111,8 +111,6 @@
 
 - (void)didEnterBackground {
     [self.camera stopPreview];
-    // disconnect p2p channel when enter background
-    [self.camera disConnect];
 }
 
 - (void)willEnterForeground {
@@ -132,6 +130,12 @@
     self.stateLabel.hidden = YES;
 }
 
+- (void)cameraDPDidUpdate:(TuyaSmartCameraDPManager *)manager dps:(NSDictionary *)dpsData {
+    if ([[dpsData objectForKey:TuyaSmartCameraWirelessAwakeDPName] boolValue]) {
+        [self retryAction];
+    }
+}
+
 #pragma mark - Action
 
 - (void)settingAction {
@@ -142,23 +146,36 @@
 }
 
 - (void)retryAction {
-//    [self.controlView disableAllControl];
+    [self.controlView disableAllControl];
     if (!self.camera.device.deviceModel.isOnline) {
         self.stateLabel.hidden = NO;
         self.stateLabel.text = NSLocalizedString(@"title_device_offline", @"");
         return;
     }
     if ([self isDoorbell]) {
-        [self.camera.device awakeDeviceWithSuccess:nil failure:nil];
-    }
-    [self connectCamera:^(BOOL success) {
-        if (success) {
-            [self startPreview];
+        BOOL isAwaking = [[self.camera.dpManager valueForDP:TuyaSmartCameraWirelessAwakeDPName] boolValue];
+        if (isAwaking) {
+            [self connectCamera:^(BOOL success) {
+                if (success) {
+                    [self startPreview];
+                }else {
+                    [self stopLoading];
+                    self.retryButton.hidden = NO;
+                }
+            }];
         }else {
-            [self stopLoading];
-            self.retryButton.hidden = NO;
+            [self.camera.device awakeDeviceWithSuccess:nil failure:nil];
         }
-    }];
+    }else {
+        [self connectCamera:^(BOOL success) {
+            if (success) {
+                [self startPreview];
+            }else {
+                [self stopLoading];
+                self.retryButton.hidden = NO;
+            }
+        }];
+    }
     [self showLoadingWithTitle:NSLocalizedString(@"loading", @"")];
     self.retryButton.hidden = YES;
 }
@@ -177,7 +194,7 @@
 }
 
 - (BOOL)isDoorbell {
-    return self.camera.device.deviceModel.isLowPowerDevice;
+    return [self.camera.dpManager isSupportDP:TuyaSmartCameraWirelessAwakeDPName];
 }
 
 - (void)startPreview {

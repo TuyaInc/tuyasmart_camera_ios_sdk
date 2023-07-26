@@ -8,7 +8,6 @@
 
 #import "AppDelegate.h"
 #import "TYDemoApplicationImpl.h"
-#import <TuyaSmartLogger/TuyaSmartLogger.h>
 
 @interface AppDelegate ()
 
@@ -22,8 +21,6 @@
     // config your appkey and secret
     config.appKey = <#your appkey#>;
     config.secretKey = <#your appSecret#>;
-    [TuyaSmartLogger startLog];
-//    NSLog(@"&&&& %@", [TuyaSmartLogger getDebugLogPath]);
     
     return [[TYDemoApplicationImpl sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions config:config];
 }

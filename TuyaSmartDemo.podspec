@@ -88,7 +88,6 @@ TODO: Add long description of the pod here.
     ss.dependency 'TuyaSmartCameraKit'
     ss.dependency 'TYEncryptImage'
     ss.dependency 'DACircularProgress'
-    ss.dependency 'TuyaCameraUIKit'
   end
   
   # s.resource_bundles = {

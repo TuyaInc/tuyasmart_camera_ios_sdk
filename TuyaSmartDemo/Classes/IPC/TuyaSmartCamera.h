@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 #import <TuyaSmartCameraKit/TuyaSmartCameraKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import "TYCameraTimeLineModel.h"
 
 typedef NSArray<NSNumber *> TYNumberArray;
 typedef NSArray<NSDictionary *> TYDictArray;
@@ -96,7 +95,7 @@ typedef void(^TYPlaybackImageDownloadCallback)(UIImage *image, int errCode);
 
 - (void)stopPreview;
 
-- (void)startPlaybackWithPlayTime:(NSInteger)playTime timelineModel:(TYCameraTimeLineModel *)model success:(IPCVoidBlock)success failure:(IPCErrorBlock)failure;
+- (void)startPlaybackWithPlayTime:(NSInteger)playTime playbackSlice:(NSDictionary *)timeSlice success:(IPCVoidBlock)success failure:(IPCErrorBlock)failure;
 
 - (void)pausePlayback:(IPCVoidBlock)success failure:(IPCErrorBlock)failure;
 
@@ -121,6 +120,16 @@ typedef void(^TYPlaybackImageDownloadCallback)(UIImage *image, int errCode);
 - (void)startRecord:(IPCVoidBlock)success failure:(IPCErrorBlock)failure;
 
 - (void)stopRecord:(IPCVoidBlock)success failure:(IPCErrorBlock)failure;
+
+- (void)downloadThumbnailsWithTimeSlice:(NSDictionary *)timeSlice complete:(TYPlaybackImageDownloadCallback)complete;
+
+- (void)cancelDownloadPlayback;
+
+- (void)downloadPlaybackVideoWithStartTime:(NSInteger)startTime endTime:(NSInteger)endTime success:(void(^)(NSString *filePath))success progress:(void(^)(int progress))progress failure:(void(^)(int errCode))failure;
+
+- (void)setPlaybackSpeed:(TuyaSmartCameraPlaybackSpeed)speed callback:(void(^)(int errCode))callback;
+
+- (void)deletePlaybackVideoWithDate:(TuyaSmartPlaybackDate *)date callback:(void(^)(int errCode))callback;
 
 @end
 
